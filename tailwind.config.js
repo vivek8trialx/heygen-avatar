@@ -13,9 +13,6 @@ module.exports = {
         sans: ["var(--font-sans)"],
         mono: ["var(--font-geist-mono)"],
       },
-      screens: {
-        'xs': '480px', // Custom small screen breakpoint
-      },
     },
   },
   darkMode: "class",
