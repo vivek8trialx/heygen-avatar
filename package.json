@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx -c .eslintrc.json --fix"
   },
+  "type": "module",
   "dependencies": {
     "@ai-sdk/openai": "^0.0.34",
     "@heygen/streaming-avatar": "^2.0.8",
