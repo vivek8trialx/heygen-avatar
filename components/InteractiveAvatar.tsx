@@ -1202,7 +1202,7 @@ import InteractiveAvatarTextInput from "./InteractiveAvatarTextInput";
 import { AVATARS, STT_LANGUAGE_LIST } from "@/app/lib/constants";
 
 interface ChatMessage {
-  type: 'avatar' | 'user';
+  type: 'assistant' | 'patient';
   text: string;
   timestamp: Date;
 }
@@ -1242,6 +1242,38 @@ export default function InteractiveAvatar() {
 
     return "";
   }
+  function consolidateAvatarResponses(conversation: ChatMessage[]) {
+    const consolidated = [];
+    let avatarText = "";
+
+    conversation.forEach((message, index) => {
+        if (message.type === "assistant") {
+            avatarText += message.text;
+        } else {
+            if (avatarText) {
+                consolidated.push({
+                    type: "assistant",
+                    text: avatarText,
+                    timestamp: conversation[index - 1]?.timestamp, // Use the last avatar's timestamp
+                });
+                avatarText = "";
+            }
+            consolidated.push(message);
+        }
+    });
+
+    // Handle remaining avatar text if any
+    if (avatarText) {
+        consolidated.push({
+            type: "assistant",
+            text: avatarText,
+            timestamp: conversation[conversation.length - 1]?.timestamp,
+        });
+    }
+
+    return consolidated;
+}
+
 
   async function startSession() {
     try {
@@ -1258,10 +1290,8 @@ export default function InteractiveAvatar() {
       avatar.current.on(StreamingEvents.AVATAR_STOP_TALKING, (e) => {
       });
       avatar.current.on(StreamingEvents.STREAM_DISCONNECTED, () => {
-        console.log("This is what happened");
-        console.log(conversation)
-
-        console.log(conversationRef.current);
+        let consolidated_coversation = consolidateAvatarResponses(conversationRef.current);
+        console.log(consolidated_coversation);
         endSession();
       });
       avatar.current?.on(StreamingEvents.STREAM_READY, (event) => {
@@ -1280,7 +1310,7 @@ export default function InteractiveAvatar() {
         setConversation(prev => {
           console.log("Previous Conversation:", prev);
           const newConversation: ChatMessage[] = [...prev, {
-            type: 'avatar',
+            type: 'assistant',
             text: event.detail.message,
             timestamp: new Date()
           }];
@@ -1293,7 +1323,7 @@ export default function InteractiveAvatar() {
         console.log("User message event received:", event.detail);
         setConversation(prev => {
           const newConversation: ChatMessage[] = [...prev, {
-            type: 'user',
+            type: 'patient',
             text: event.detail.message,
             timestamp: new Date()
           }];
