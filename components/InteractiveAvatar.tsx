@@ -1242,37 +1242,29 @@ export default function InteractiveAvatar() {
 
     return "";
   }
-  function consolidateAvatarResponses(conversation: ChatMessage[]) {
-    const consolidated = [];
-    let avatarText = "";
+  function transformConversation(conversation: ChatMessage[]) {
+    const result: any = { conversation: [] };
+    let currentSpeaker = "";
 
-    conversation.forEach((message, index) => {
-        if (message.type === "assistant") {
-            avatarText += message.text;
+    conversation.forEach((message) => {
+      if (message.type === "patient") {
+        currentSpeaker = "Patient";
+        result.conversation.push({ [currentSpeaker]: message.text });
+      } else if (message.type === "assistant") {
+        if (currentSpeaker !== "Assistant") {
+          // Start a new Assistant message
+          currentSpeaker = "Assistant";
+          result.conversation.push({ [currentSpeaker]: message.text });
         } else {
-            if (avatarText) {
-                consolidated.push({
-                    type: "assistant",
-                    text: avatarText,
-                    timestamp: conversation[index - 1]?.timestamp, // Use the last avatar's timestamp
-                });
-                avatarText = "";
-            }
-            consolidated.push(message);
+          // Append to the current Assistant message
+          const lastMessage = result.conversation[result.conversation.length - 1];
+          lastMessage[currentSpeaker] += message.text;
         }
+      }
     });
 
-    // Handle remaining avatar text if any
-    if (avatarText) {
-        consolidated.push({
-            type: "assistant",
-            text: avatarText,
-            timestamp: conversation[conversation.length - 1]?.timestamp,
-        });
-    }
-
-    return consolidated;
-}
+    return result;
+  }
 
 
   async function startSession() {
@@ -1290,7 +1282,7 @@ export default function InteractiveAvatar() {
       avatar.current.on(StreamingEvents.AVATAR_STOP_TALKING, (e) => {
       });
       avatar.current.on(StreamingEvents.STREAM_DISCONNECTED, () => {
-        let consolidated_coversation = consolidateAvatarResponses(conversationRef.current);
+        let consolidated_coversation = transformConversation(conversationRef.current);
         console.log(consolidated_coversation);
         endSession();
       });
@@ -1318,7 +1310,7 @@ export default function InteractiveAvatar() {
           return newConversation;
         });
       });
-  
+
       avatar.current.on(StreamingEvents.USER_TALKING_MESSAGE, (event) => {
         console.log("User message event received:", event.detail);
         setConversation(prev => {
