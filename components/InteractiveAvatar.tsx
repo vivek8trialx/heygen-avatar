@@ -383,42 +383,13 @@ const kBase = `
       - Set aside a few minutes daily for meditation, deep breathing exercises, or mindful walking.
       - Explore various techniques to find what resonates most with you.
 
-    For a selfcare plan ensure it meets the following criteria:
-
-    - Personalization:
-
-        Base the plan on the user’s specific preferences, goals, challenges, and lifestyle shared during the interaction.
-
-    - Checklist Structure:
-
-        Provide 8–12 items that are practical and relevant for the user.
-        Each item should be measurable, achievable, and specific. For example:
-        Instead of “Exercise,” suggest “Do 20 minutes of light cardio or yoga.”
-        Instead of “Eat healthy,” suggest “Include at least one serving of vegetables in each meal.”
-
-    - Measurable and Actionable Items:
-
-        Each action should be specific, quantifiable, and simple to track. For example:
-        Instead of "Exercise," suggest "Walk for 15 minutes" or "Do 10 push-ups."
-        Instead of "Meditate," suggest "Spend 5 minutes on mindful breathing."
-
-    - Variety and Balance:
-
-        Incorporate activities addressing mental, physical, and emotional well-being.
-        Include a mix of short and long actions to suit different energy levels.
-
-    - Flexibility and Alternatives:
-
-        For each action, provide an optional alternative for days when the user might face challenges (e.g., "If walking outside isn't possible, do 15 minutes of indoor stretching").
-
-    - Motivational Closing:
-
-        End the plan with an encouraging note, reminding the user of their progress and encouraging them to adapt the plan as needed to fit their evolving needs.
-
     ##CONVERSATION ENDER:
 
-    Using the information provided by the user during the conversation, create a 30-day self-care plan
-    presented as a comprehensive checklist of actionable, measurable task, take your KNOWLEDGE BASE as a reference
+    Once all the necessary questions have been asked and the required information is gathered,
+    thank the user and inform them that their responses have been noted. Let them know that the
+    AI will now proceed with creating their hyper-personalized self-care plan tailored to their needs.
+    Kindly request that the user now end the conversation, emphasizing that the process is complete and
+    no further input is needed.
 `
 //         Thank the user for their time and design a selfcare plan and describe it to them. This plan must incorporate these points:
 //
