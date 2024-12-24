@@ -1314,8 +1314,15 @@ export default function InteractiveAvatar() {
 
   async function startSession() {
     try {
-      await navigator.mediaDevices.getUserMedia({ audio: true });
-
+      // await navigator.mediaDevices.getUserMedia({ audio: true });
+      await navigator.mediaDevices.getUserMedia({
+        audio: {
+          autoGainControl: false,
+          echoCancellation: false,
+          noiseSuppression: false
+        },
+      })
+    
       setIsLoadingSession(true);
       const newToken = await fetchAccessToken();
 
