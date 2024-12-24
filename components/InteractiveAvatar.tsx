@@ -1406,7 +1406,7 @@ export default function InteractiveAvatar() {
         const { avatarName, emotion } = getAvatarConfig();
         
         const res = await avatar.current.createStartAvatar({
-          quality: AvatarQuality.Low,
+          quality: AvatarQuality.High,
           avatarName: avatarName,
           knowledgeBase: kBase,
           voice: {
