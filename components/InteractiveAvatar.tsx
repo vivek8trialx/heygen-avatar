@@ -1263,7 +1263,36 @@ export default function InteractiveAvatar() {
       }
     });
 
+
     return result;
+  }
+
+  // post call for conversation
+   async function PostConversation(consolidatedConversation: any) {
+    try {
+     
+      const res = await fetch("https://dev-advance.ainfo.io/plans/tasks/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(consolidatedConversation),
+      });
+  
+      const data = await res.json();
+  
+      if (res.ok) {
+        console.log("API Call Successful:");
+        return data; 
+      } else {
+        throw new Error(`API Error: ${res.status} - ${res.statusText}`);
+      }
+    } catch (error) {
+      console.error("Error retrieving access token:", error);
+      return new Response("Failed to retrieve access token", {
+        status: 500,
+      });
+    }
   }
 
 
@@ -1283,7 +1312,7 @@ export default function InteractiveAvatar() {
       });
       avatar.current.on(StreamingEvents.STREAM_DISCONNECTED, () => {
         let consolidated_coversation = transformConversation(conversationRef.current);
-        console.log(consolidated_coversation);
+        PostConversation(consolidated_coversation)
         endSession();
       });
       avatar.current?.on(StreamingEvents.STREAM_READY, (event) => {
