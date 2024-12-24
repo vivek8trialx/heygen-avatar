@@ -1169,15 +1169,13 @@ interface ChatMessage {
   timestamp: Date;
 }
 
-const CaptionDisplay = ({ conversation }: any) => {
-  // Group messages by type (speaker) and concatenate their text
+const CaptionDisplay = ({ conversation, visible }: any) => {
   const consolidatedMessages = useMemo(() => {
     const messages = [];
     let currentMessage = null;
     
     for (const message of conversation) {
       if (!currentMessage || currentMessage.type !== message.type) {
-        // Start a new message for different speaker
         if (currentMessage) {
           messages.push(currentMessage);
         }
@@ -1187,20 +1185,19 @@ const CaptionDisplay = ({ conversation }: any) => {
           timestamp: message.timestamp
         };
       } else {
-        // Same speaker, concatenate the text
         currentMessage.text = `${currentMessage.text} ${message.text}`;
-        currentMessage.timestamp = message.timestamp; // Keep the latest timestamp
+        currentMessage.timestamp = message.timestamp;
       }
     }
     
-    // Add the last message if it exists
     if (currentMessage) {
       messages.push(currentMessage);
     }
     
-    // Return only the last 2 messages (one from each speaker)
     return messages.slice(-2);
   }, [conversation]);
+  
+  if (!visible) return null;
   
   return (
     <div className="absolute bottom-24 left-0 right-0 flex flex-col items-center z-40 pointer-events-none">
@@ -1240,6 +1237,7 @@ export default function InteractiveAvatar() {
   const avatar = useRef<StreamingAvatar | null>(null);
   const [chatMode, setChatMode] = useState("voice_mode");
   const [isUserTalking, setIsUserTalking] = useState(false);
+  const [showCaptions, setShowCaptions] = useState(true);
 
   useEffect(() => {
     conversationRef.current = conversation; // Update the ref whenever conversation state changes
@@ -1493,8 +1491,15 @@ export default function InteractiveAvatar() {
                 <track kind="captions" />
               </video>
 
-              <CaptionDisplay conversation={conversation} />
+              <CaptionDisplay conversation={conversation} visible={showCaptions} />
               <div className="absolute bottom-4 right-2 flex flex-col gap-2 z-50">
+              <Button
+                  size="sm"
+                  className="bg-gradient-to-tr from-indigo-500 to-indigo-300 text-white rounded-lg"
+                  onClick={() => setShowCaptions(!showCaptions)}
+                >
+                  {showCaptions ? "Hide Captions" : "Show Captions"}
+                </Button>
                 <Button
                   size="sm"
                   className="bg-gradient-to-tr from-indigo-500 to-indigo-300 text-white rounded-lg"
