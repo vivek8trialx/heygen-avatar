@@ -1156,7 +1156,7 @@ import {
   Tabs,
   Tab,
 } from "@nextui-org/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { useMemoizedFn, usePrevious } from "ahooks";
 
 import InteractiveAvatarTextInput from "./InteractiveAvatarTextInput";
@@ -1168,6 +1168,60 @@ interface ChatMessage {
   text: string;
   timestamp: Date;
 }
+
+const CaptionDisplay = ({ conversation }: any) => {
+  // Group messages by type (speaker) and concatenate their text
+  const consolidatedMessages = useMemo(() => {
+    const messages = [];
+    let currentMessage = null;
+    
+    for (const message of conversation) {
+      if (!currentMessage || currentMessage.type !== message.type) {
+        // Start a new message for different speaker
+        if (currentMessage) {
+          messages.push(currentMessage);
+        }
+        currentMessage = {
+          type: message.type,
+          text: message.text,
+          timestamp: message.timestamp
+        };
+      } else {
+        // Same speaker, concatenate the text
+        currentMessage.text = `${currentMessage.text} ${message.text}`;
+        currentMessage.timestamp = message.timestamp; // Keep the latest timestamp
+      }
+    }
+    
+    // Add the last message if it exists
+    if (currentMessage) {
+      messages.push(currentMessage);
+    }
+    
+    // Return only the last 2 messages (one from each speaker)
+    return messages.slice(-2);
+  }, [conversation]);
+  
+  return (
+    <div className="absolute bottom-24 left-0 right-0 flex flex-col items-center z-40 pointer-events-none">
+      {consolidatedMessages.map((message) => (
+        <div
+          key={`${message.type}-${message.timestamp.getTime()}`}
+          className={`
+            px-4 py-2 mb-2 rounded-lg max-w-[80%] text-lg
+            animate-fade-in
+            ${message.type === 'assistant' 
+              ? 'bg-black/70 text-white' 
+              : 'bg-indigo-500/70 text-white'
+            }
+          `}
+        >
+          {message.text}
+        </div>
+      ))}
+    </div>
+  );
+};
 
 export default function InteractiveAvatar() {
   const [isLoadingSession, setIsLoadingSession] = useState(false);
@@ -1431,6 +1485,8 @@ export default function InteractiveAvatar() {
               >
                 <track kind="captions" />
               </video>
+
+              <CaptionDisplay conversation={conversation} />
               <div className="absolute bottom-4 right-2 flex flex-col gap-2 z-50">
                 <Button
                   size="sm"
