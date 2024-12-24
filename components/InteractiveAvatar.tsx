@@ -318,6 +318,8 @@ const kBase = `
 
     Ensure the conversation remains focused on information collection, with no advice, tips, or suggestions about how to improve their health. The information you gather will be used by a separate service to create their personalized health plan.
 
+    Ensure that the conversation wraps up within 3 minutes. Provide concise, clear, and direct responses to the user's queries, and guide the conversation toward closure while being polite and professional.
+
    ##KNOWLEDGE BASE:
 
     Every time that you respond to user input, provide answers from the below knowledge. Always prioritize this knowledge when replying to users:
