@@ -1158,6 +1158,7 @@ import {
 } from "@nextui-org/react";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useMemoizedFn, usePrevious } from "ahooks";
+import { useSearchParams } from 'next/navigation';
 
 import InteractiveAvatarTextInput from "./InteractiveAvatarTextInput";
 
@@ -1168,6 +1169,14 @@ interface ChatMessage {
   text: string;
   timestamp: Date;
 }
+
+const emotionMap: { [key: string]: VoiceEmotion } = {
+  'excited': VoiceEmotion.EXCITED,
+  'serious': VoiceEmotion.SERIOUS,
+  'friendly': VoiceEmotion.FRIENDLY,
+  'soothing': VoiceEmotion.SOOTHING,
+  'broadcaster': VoiceEmotion.BROADCASTER
+};
 
 const CaptionDisplay = ({ conversation, visible }: any) => {
   const consolidatedMessages = useMemo(() => {
@@ -1281,6 +1290,27 @@ export default function InteractiveAvatar() {
     return result;
   }
 
+  const searchParams = useSearchParams();
+  
+  // Get avatar name and emotion from URL params or use defaults
+  const defaultAvatarName = "37f4d912aa564663a1cf8d63acd0e1ab";
+  const defaultEmotion = VoiceEmotion.EXCITED;
+
+  // Get values from URL or use defaults with proper type handling
+  const getAvatarConfig = () => {
+    const avatarName = searchParams.get('avatar_name') || defaultAvatarName;
+    
+    // Get emotion from URL and convert to lowercase for mapping
+    const emotionParam = searchParams.get('emotion')?.toLowerCase();
+    let emotion = defaultEmotion;
+    
+    if (emotionParam && emotionParam in emotionMap) {
+      emotion = emotionMap[emotionParam];
+    }
+    
+    return { avatarName, emotion };
+  };
+
   // post call for conversation
    async function PostConversation(consolidatedConversation: any) {
     try {
@@ -1373,14 +1403,15 @@ export default function InteractiveAvatar() {
         });
       });
       try {
+        const { avatarName, emotion } = getAvatarConfig();
+        
         const res = await avatar.current.createStartAvatar({
           quality: AvatarQuality.Low,
-          avatarName: "37f4d912aa564663a1cf8d63acd0e1ab",
-          //           avatarId: "1733544514",
+          avatarName: avatarName,
           knowledgeBase: kBase,
           voice: {
-            rate: 1, // 0.5 ~ 1.5
-            emotion: VoiceEmotion.EXCITED,
+            rate: 1,
+            emotion: emotion,
           },
           language: language,
         });
