@@ -1287,7 +1287,7 @@ export default function InteractiveAvatar() {
    async function PostConversation(consolidatedConversation: any) {
     try {
      
-      const res = await fetch("https://dev-advance.ainfo.io/plans/tasks/", {
+      const res = await fetch("https://dev-advance.ainfo.io/plans/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -1384,11 +1384,11 @@ export default function InteractiveAvatar() {
         // default to voice mode
         await avatar.current?.startVoiceChat();
         setChatMode("voice_mode");
-        await avatar.current?.speak({
-          text: "Hi! I'm your AI health coach. I'm here to help you with healthy eating, sleep, meditation, and recovery. What would you like to focus on today?",
-          taskType: TaskType.TALK,
-          taskMode: TaskMode.SYNC
-        });
+        // await avatar.current?.speak({
+        //   text: "Hi! I'm your AI health coach. I'm here to help you with healthy eating, sleep, meditation, and recovery. What would you like to focus on today?",
+        //   taskType: TaskType.TALK,
+        //   taskMode: TaskMode.SYNC
+        // });
       } catch (error) {
         console.error("Error starting avatar session:", error);
       } finally {
