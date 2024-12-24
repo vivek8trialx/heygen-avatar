@@ -1220,6 +1220,20 @@ const CaptionDisplay = ({ conversation, visible }: any) => {
   );
 };
 
+// get urlparams
+export const getUrlSearchParams = (): Record<string, string> => {
+  const params: Record<string, string> = {}; 
+  const searchParams = new URLSearchParams(window.location.search);
+  searchParams.forEach((value, key) => {
+    params[key] = value;
+  });
+  return params;
+};
+// get values
+const UrlValues = getUrlSearchParams();
+const AvatarName = UrlValues?.avatar_name ||"37f4d912aa564663a1cf8d63acd0e1ab" ;
+const emotion = UrlValues?.emotion || "Excited"
+
 export default function InteractiveAvatar() {
   const [isLoadingSession, setIsLoadingSession] = useState(false);
   const [isLoadingRepeat, setIsLoadingRepeat] = useState(false);
@@ -1374,9 +1388,9 @@ export default function InteractiveAvatar() {
       });
       try {
         const res = await avatar.current.createStartAvatar({
-          quality: AvatarQuality.Low,
-          avatarName: "37f4d912aa564663a1cf8d63acd0e1ab",
-          //           avatarId: "1733544514",
+          quality: AvatarQuality.High,
+          avatarName:  AvatarName,
+          // avatarId: "1733544514",
           knowledgeBase: kBase,
           voice: {
             rate: 1, // 0.5 ~ 1.5
